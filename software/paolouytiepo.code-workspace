@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"name": "CS 120B",
+			"path": "../../Documents/PlatformIO/Projects/CS 120B"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"ios": "cpp"
+		}
+	}
+}

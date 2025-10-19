@@ -12,3 +12,4 @@ for i in range(5):  # test first 5 indexes
         cap.release()
     else:
         print(f"❌ No camera at index {i}")
+g

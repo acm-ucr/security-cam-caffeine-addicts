@@ -3,7 +3,7 @@ import cv2
 from sender import send_alert  # import the MQTT sender function
 
 # Load your trained YOLOv8 model
-model = YOLO("yolov8s.pt")  # make sure you include .pt for the model file
+model = YOLO("best.pt")  # <-- your trained model file
 
 # Open the security camera (0 = default webcam, 2 = external)
 cap = cv2.VideoCapture(2)

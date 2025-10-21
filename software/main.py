@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import cv2
 
 # Load your trained YOLOv8 model
-model = YOLO("yolov8s.pt")  # <-- your trained model file
+model = YOLO("best.pt")  # <-- your trained model file
 
 # Open the security camera (0 = default webcam, or replace with your RTSP/USB camera link)
 cap = cv2.VideoCapture(2)  # e.g. "rtsp://username:password@ip_address:port/stream"

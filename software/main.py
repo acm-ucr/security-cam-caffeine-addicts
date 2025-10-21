@@ -1,15 +1,18 @@
 from ultralytics import YOLO
 import cv2
+from sender import send_alert  # import the MQTT sender function
 
 # Load your trained YOLOv8 model
-model = YOLO("yolov8s.pt")  # <-- your trained model file
+model = YOLO("yolov8s.pt")  # make sure you include .pt for the model file
 
-# Open the security camera (0 = default webcam, or replace with your RTSP/USB camera link)
-cap = cv2.VideoCapture(2)  # e.g. "rtsp://username:password@ip_address:port/stream"
+# Open the security camera (0 = default webcam, 2 = external)
+cap = cv2.VideoCapture(2)
 
 if not cap.isOpened():
     print("Error: Could not open camera.")
     exit()
+
+print("✅ YOLO running... Press 'q' to quit.")
 
 while True:
     ret, frame = cap.read()
@@ -17,15 +20,25 @@ while True:
         print("Failed to grab frame.")
         break
 
-    # Run YOLOv8 inference on the frame
+    # Run YOLOv8 inference
     results = model(frame, stream=True)
 
-    # Display results with bounding boxes
+    # Process and display results
     for r in results:
-        annotated_frame = r.plot()  # Draw bounding boxes and labels
+        annotated_frame = r.plot()
         cv2.imshow("Security Camera - YOLOv8", annotated_frame)
 
-    # Exit when 'q' is pressed
+        # Loop through detected objects
+        for box in r.boxes:
+            cls = int(box.cls[0])
+            label = model.names[cls]
+            confidence = float(box.conf[0])
+
+            # Send MQTT alert for specific detections
+            if label in ["person", "car"]:  # modify as needed
+                send_alert(label, confidence)
+
+    # Press 'q' to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 

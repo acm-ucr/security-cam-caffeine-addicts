@@ -52,8 +52,8 @@ class CleanSecurityUI:
         # ---- Title ----
         self.header_label = ctk.CTkLabel(
             root,
-            text="Live Camera Feed",
-            font=("Arial", 26, "bold"),
+            text="Live Camera Feed", 
+            font=("Arial", 26, "bold"), 
             text_color="white"
         )
         self.header_label.grid(row=0, column=0, pady=(15, 15), sticky="nwe")
@@ -78,7 +78,6 @@ class CleanSecurityUI:
 
         # ---------- Build gallery view ----------
         self._build_gallery_view()
-
         self.running = False
         self.cap = None
         self.last_frame = None
@@ -101,6 +100,7 @@ class CleanSecurityUI:
         # ---- Video Area (left) ----
         self.video_frame = ctk.CTkFrame(cv, fg_color=CARD_BG, corner_radius=20)
         self.video_frame.grid(row=0, column=0,padx=20, pady=0,sticky="nsew")
+
         self.video_label = ctk.CTkLabel(self.video_frame, text="")
         self.video_label.pack(expand=True, fill="both", padx=0, pady=0)
 
@@ -110,10 +110,12 @@ class CleanSecurityUI:
             fg_color=CARD_BG,
             corner_radius=20
         )
+
         self.preview_frame.grid(
-            row=0, column=1,
-            padx=(0, 20), pady=0,
-            sticky="nsew"
+            row=0, 
+            column=1,
+            padx=(0, 20), 
+            pady=0,sticky="nsew"
         )
 
         preview_title = ctk.CTkLabel(
@@ -261,7 +263,6 @@ class CleanSecurityUI:
     # ============================================================
     # VIEW SWITCHING
     # ============================================================
-
     def show_gallery_view(self):
         self.header_label.configure(text="Gallery")
         self.camera_view.grid_remove()
@@ -276,13 +277,12 @@ class CleanSecurityUI:
     # ============================================================
     # CAMERA CONTROLS
     # ============================================================
-
     def start_camera(self):
         if self.running:
             return
 
         # Open the security camera (0 = default webcam, 1 or 2 = external)
-        self.cap = cv2.VideoCapture(2)
+        self.cap = cv2.VideoCapture(0)
         if not self.cap.isOpened():
             print("Error: Could not open camera.")
             self.cap = None
@@ -315,7 +315,6 @@ class CleanSecurityUI:
     # ============================================================
     # SCREENSHOT
     # ============================================================
-
     def take_screenshot(self):
         if self.last_frame is None:
             print("[Screenshot] No frame available yet. Make sure the camera feed is running.")
@@ -361,7 +360,6 @@ class CleanSecurityUI:
     # ============================================================
     # CLIPS: SAVE + PLAY
     # ============================================================
-
     def clip_last_30s(self):
         if not self.frame_buffer:
             print("[Clip] No frames in buffer yet.")
@@ -392,6 +390,9 @@ class CleanSecurityUI:
         self.root.after(2000, lambda: self.ss_label.configure(text=""))
 
 
+    # ============================================================
+    # OPEN WITH MEDIA PLAYER
+    # ============================================================
     def open_with_system_player(self, path):
         """Open video using OS default media player."""
         if not os.path.exists(path):
@@ -407,6 +408,9 @@ class CleanSecurityUI:
         else:                     # Linux / Other
             subprocess.Popen(["xdg-open", path])
 
+    # ============================================================
+    # OPEN FULLSCREEN - ***NOT USED***
+    # ============================================================
     def open_clip_fullscreen(self, path: str):
         """Play clip fullscreen in a new CustomTkinter window."""
         if not os.path.exists(path):
@@ -472,9 +476,8 @@ class CleanSecurityUI:
         update_frame()
 
     # ============================================================
-    # FULLSCREEN IMAGE
+    # FULLSCREEN IMAGE - ***NOT USED***
     # ============================================================
-
     def open_fullscreen_image(self, path: str):
         """Open a screenshot fullscreen."""
         if not os.path.exists(path):
@@ -633,6 +636,9 @@ class CleanSecurityUI:
             for w in (outer, inner, thumb_label, info_label):
                 bind_open(w)
 
+    # ============================================================
+    # SCREENSHOT THUMBNAIL 
+    # ============================================================
     def _build_screenshot_thumb(self, parent, path):
         thumb_size = 80
         try:
@@ -653,6 +659,9 @@ class CleanSecurityUI:
             print(f"[Gallery] Error loading screenshot {path}: {e}")
             return ctk.CTkLabel(parent, text="Img")
 
+    # ============================================================
+    # CLIP THUMBNAIL 
+    # ============================================================
     def _build_clip_thumb(self, parent, path):
         thumb_size = 80
         try:
@@ -675,6 +684,9 @@ class CleanSecurityUI:
             print(f"[Gallery] Error loading clip thumb {path}: {e}")
             return ctk.CTkLabel(parent, text="🎥", font=("Arial", 24))
 
+    # ============================================================
+    # DELETE MEDIA 
+    # ============================================================
     def delete_media_and_refresh(self, path, parent):
         try:
             if os.path.exists(path):
@@ -686,9 +698,16 @@ class CleanSecurityUI:
         self.populate_gallery(parent)
 
     # ============================================================
+    # UPDATE UI (helper for camera loop)
+    # ============================================================
+    def update_ui(self, imgtk, detections_text):
+        self.video_label.configure(image=imgtk)
+        self.video_label.image = imgtk
+        self.detections_label.configure(text=detections_text)
+
+    # ============================================================
     # CAMERA LOOP
     # ============================================================
-
     def camera_loop(self):
         while self.running and self.cap is not None:
             ret, frame = self.cap.read()
@@ -701,7 +720,7 @@ class CleanSecurityUI:
             annotated_frame = results.plot()
             self.last_frame = annotated_frame.copy()
 
-            # Add to clip buffer
+            # Add frame to clip buffer
             now = time.time()
             self.frame_buffer.append((now, annotated_frame.copy()))
             cutoff = now - self.clip_seconds
@@ -747,11 +766,9 @@ class CleanSecurityUI:
             )
 
             time.sleep(0.01)
-
-    def update_ui(self, imgtk, detections_text):
-        self.video_label.configure(image=imgtk)
-        self.video_label.image = imgtk
-        self.detections_label.configure(text=detections_text)
+# ============================================================
+# END of CleanSecurityUI class
+# ============================================================
 
 # ---- Run App ----
 if __name__ == "__main__":

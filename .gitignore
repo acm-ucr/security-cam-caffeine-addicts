@@ -1,3 +1,5 @@
 software/__pycache__/
 software/*.pyc
-*.pt
+software/*.pt
+software/clips/
+software/screenshots/

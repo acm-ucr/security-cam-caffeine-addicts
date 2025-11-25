@@ -1,0 +1,3 @@
+software/__pycache__/
+software/*.pyc
+*.pt
